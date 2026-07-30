@@ -55,9 +55,8 @@ jobs:
         with:
           # If inputs.languages is empty, CodeQL will attempt to auto-detect
           languages: ${{ github.event.inputs.languages }}
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+          # This is the magic setting: tells CodeQL to NOT compile the code
+          build-mode: none
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
