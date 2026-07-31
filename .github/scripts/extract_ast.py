@@ -195,7 +195,30 @@ def process_java(tree, source_bytes, rel_path, all_nodes, all_edges):
     file_id = f"file://{rel_path}"
     
     def traverse(node, current_context_id=None):
-        if node.type == 'method_declaration':
+        if node.type == 'class_declaration':
+            name_node = node.child_by_field_name('name')
+            if name_node:
+                class_name = extract_node_text(name_node, source_bytes)
+                class_id = f"class://{rel_path}/{class_name}"
+                
+                all_nodes.append({
+                    "id": class_id,
+                    "type": "CLASS",
+                    "name": class_name,
+                    "file": rel_path,
+                    "line_start": node.start_point[0] + 1,
+                    "line_end": node.end_point[0] + 1
+                })
+                source_id = current_context_id or file_id
+                all_edges.append({"source": source_id, "target": class_id, "type": "DEFINES"})
+                
+                body_node = node.child_by_field_name('body')
+                if body_node:
+                    for child in body_node.children:
+                        traverse(child, current_context_id=class_id)
+                return
+
+        elif node.type == 'method_declaration':
             name_node = node.child_by_field_name('name')
             if name_node:
                 func_name = extract_node_text(name_node, source_bytes)
@@ -217,7 +240,8 @@ def process_java(tree, source_bytes, rel_path, all_nodes, all_edges):
                     "line_start": node.start_point[0] + 1,
                     "line_end": node.end_point[0] + 1
                 })
-                all_edges.append({"source": file_id, "target": func_id, "type": "DEFINES"})
+                source_id = current_context_id or file_id
+                all_edges.append({"source": source_id, "target": func_id, "type": "DEFINES"})
                 
                 body_node = node.child_by_field_name('body')
                 if body_node:
