@@ -1,13 +1,17 @@
+import java.io.*;
+import java.security.*;
+import javax.crypto.*;
 import java.sql.*;
 import java.util.*;
 
 /**
  * AdminService.java
  * -----------------
- * Provides all administrative operations for the Library Management System.
- * 
- * NOTE FOR CODEQL SCANNING:
- * Contains deliberate SQL injection vulnerabilities in search methods for CodeQL detection.
+ * Admin service implementation containing intentional security flaws for CodeQL SAST scanning:
+ *  - java/sql-injection
+ *  - java/path-injection
+ *  - java/potentially-weak-cryptographic-algorithm
+ *  - java/unclosed-resource
  */
 public class AdminService {
 
@@ -73,7 +77,6 @@ public class AdminService {
     public void deleteBook() {
         System.out.print("Enter Book ID to Delete: ");
         int id;
-
         try {
             id = Integer.parseInt(sc.nextLine().trim());
         } catch (NumberFormatException e) {
@@ -192,10 +195,8 @@ public class AdminService {
     }
 
     /**
-     * Searches for books by title.
-     * 
-     * INTENTIONAL VULNERABILITY #3: SQL Injection (CodeQL query: java/sql-injection)
-     * Direct string concatenation in SQL statement allowing arbitrary SQL input.
+     * INTENTIONAL VULNERABILITY: SQL Injection (CodeQL Rule: java/sql-injection)
+     * User query parameter string-concatenated directly into SQL statement.
      */
     public void searchBookByTitle() {
         System.out.print("Enter Book Title: ");
@@ -205,13 +206,9 @@ public class AdminService {
         if (con == null) return;
 
         try {
-            // =========================================================================
-            // INTENTIONAL VULNERABILITY: SQL Injection via string concatenation
-            // CodeQL Rule: java/sql-injection
-            // =========================================================================
             String sql = "SELECT * FROM books WHERE title LIKE '%" + title + "%'";
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery(sql); // CodeQL: java/sql-injection
 
             System.out.println("--- Search Results ---");
             boolean found = false;
@@ -236,9 +233,7 @@ public class AdminService {
     }
 
     /**
-     * Searches for books by author.
-     * 
-     * INTENTIONAL VULNERABILITY #4: SQL Injection (CodeQL query: java/sql-injection)
+     * INTENTIONAL VULNERABILITY: SQL Injection (CodeQL Rule: java/sql-injection)
      */
     public void searchBookByAuthor() {
         System.out.print("Enter Author Name: ");
@@ -248,13 +243,9 @@ public class AdminService {
         if (con == null) return;
 
         try {
-            // =========================================================================
-            // INTENTIONAL VULNERABILITY: SQL Injection via string concatenation
-            // CodeQL Rule: java/sql-injection
-            // =========================================================================
             String sql = "SELECT * FROM books WHERE author LIKE '%" + author + "%'";
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql);
+            ResultSet rs = st.executeQuery(sql); // CodeQL: java/sql-injection
 
             System.out.println("--- Search Results ---");
             boolean found = false;
@@ -275,6 +266,39 @@ public class AdminService {
             System.out.println("[Error] Failed search: " + e.getMessage());
         } finally {
             closeConnection(con);
+        }
+    }
+
+    /**
+     * INTENTIONAL VULNERABILITY: Path Injection / Directory Traversal (CodeQL Rule: java/path-injection)
+     * AND Unclosed Resource (CodeQL Rule: java/unclosed-resource)
+     */
+    public void exportBookReport(String filename) {
+        try {
+            File reportFile = new File("C:/library/reports/" + filename);
+            FileInputStream fis = new FileInputStream(reportFile); // CodeQL: java/path-injection
+            byte[] data = fis.readAllBytes();
+            System.out.println("Exported report bytes: " + data.length);
+            // fis intentionally left unclosed -> CodeQL: java/unclosed-resource
+        } catch (Exception e) {
+            System.out.println("[Error] Export report error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * INTENTIONAL VULNERABILITY: Weak Cryptographic Algorithms (CodeQL Rule: java/potentially-weak-cryptographic-algorithm)
+     */
+    public byte[] encryptAdminPayload(byte[] input) {
+        try {
+            // DES is a weak cipher algorithm
+            Cipher cipher = Cipher.getInstance("DES"); // CodeQL: java/potentially-weak-cryptographic-algorithm
+            
+            // MD5 is a weak hashing algorithm
+            MessageDigest md5 = MessageDigest.getInstance("MD5"); // CodeQL: java/potentially-weak-cryptographic-algorithm
+            md5.update(input);
+            return md5.digest();
+        } catch (Exception e) {
+            return new byte[0];
         }
     }
 

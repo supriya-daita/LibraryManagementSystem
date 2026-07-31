@@ -19,46 +19,107 @@
 
 const DB = {
   users: [
-    { user_id: 12345678, username: 'Rohit Sharma',    password: 'rohit@123',    role: 'admin' },
-    { user_id: 23456781, username: 'Anita Verma',     password: 'anita@2024',   role: 'admin' },
-    { user_id: 34567812, username: 'Karthik Reddy',   password: 'karthik#12',   role: 'user'  },
-    { user_id: 45678123, username: 'Meena Kumari',    password: 'meena_2001',   role: 'user'  },
-    { user_id: 56781234, username: 'Sathvik Rao',     password: 'sathvik@777',  role: 'user'  },
-    { user_id: 67812345, username: 'Divya Shah',      password: 'divya2020',    role: 'user'  },
-    { user_id: 78123456, username: 'Rahul Patil',     password: 'rahul_pass',   role: 'user'  },
-    { user_id: 81234567, username: 'Sneha Iyer',      password: 'sneha@001',    role: 'user'  },
-    { user_id: 83947261, username: 'Pooja Singh',     password: 'pooja@06',     role: 'user'  },
-    { user_id: 92740315, username: 'Harsha Vardhan',  password: 'harsha#09',    role: 'user'  },
+    { user_id: 12345678, username: 'Rohit Sharma', password: 'rohit@123', role: 'admin' },
+    { user_id: 23456781, username: 'Anita Verma', password: 'anita@2024', role: 'admin' },
+    { user_id: 34567812, username: 'Karthik Reddy', password: 'karthik#12', role: 'user' },
+    { user_id: 45678123, username: 'Meena Kumari', password: 'meena_2001', role: 'user' },
+    { user_id: 56781234, username: 'Sathvik Rao', password: 'sathvik@777', role: 'user' },
+    { user_id: 67812345, username: 'Divya Shah', password: 'divya2020', role: 'user' },
+    { user_id: 78123456, username: 'Rahul Patil', password: 'rahul_pass', role: 'user' },
+    { user_id: 81234567, username: 'Sneha Iyer', password: 'sneha@001', role: 'user' },
+    { user_id: 83947261, username: 'Pooja Singh', password: 'pooja@06', role: 'user' },
+    { user_id: 92740315, username: 'Harsha Vardhan', password: 'harsha#09', role: 'user' },
   ],
 
   books: [
-    { bid: 12001, title: "Programming in java",                      author: "Sanjay Gupta",       quantity: 7  },
-    { bid: 12002, title: "To Kill a Mockingbird",                    author: "Harper Lee",          quantity: 5  },
-    { bid: 12003, title: "1984",                                     author: "George Orwell",       quantity: 6  },
-    { bid: 12004, title: "The Great Gatsby",                         author: "F. Scott Fitzgerald", quantity: 4  },
-    { bid: 12005, title: "The Alchemist",                            author: "Paulo Coelho",        quantity: 10 },
-    { bid: 12006, title: "Pride and Prejudice",                      author: "Jane Austen",         quantity: 6  },
-    { bid: 12007, title: "The Catcher in the Rye",                   author: "J.D. Salinger",       quantity: 2  },
-    { bid: 12008, title: "The Hobbit",                               author: "J.R.R. Tolkien",      quantity: 8  },
-    { bid: 12009, title: "Harry Potter and the Sorcerer's Stone",    author: "J.K. Rowling",        quantity: 12 },
-    { bid: 12010, title: "The Da Vinci Code",                        author: "Dan Brown",           quantity: 4  },
-    { bid: 12011, title: "A Brief History of Time",                  author: "Stephen Hawking",     quantity: 2  },
-    { bid: 12012, title: "Think and Grow Rich",                      author: "Napoleon Hill",       quantity: 9  },
-    { bid: 12013, title: "Rich Dad Poor Dad",                        author: "Robert Kiyosaki",     quantity: 0  },
-    { bid: 12014, title: "The Power of Habit",                       author: "Charles Duhigg",      quantity: 5  },
-    { bid: 12015, title: "Clean Code",                               author: "Robert C. Martin",    quantity: 4  },
+    { bid: 12001, title: "Programming in java", author: "Sanjay Gupta", quantity: 7 },
+    { bid: 12002, title: "To Kill a Mockingbird", author: "Harper Lee", quantity: 5 },
+    { bid: 12003, title: "1984", author: "George Orwell", quantity: 6 },
+    { bid: 12004, title: "The Great Gatsby", author: "F. Scott Fitzgerald", quantity: 4 },
+    { bid: 12005, title: "The Alchemist", author: "Paulo Coelho", quantity: 10 },
+    { bid: 12006, title: "Pride and Prejudice", author: "Jane Austen", quantity: 6 },
+    { bid: 12007, title: "The Catcher in the Rye", author: "J.D. Salinger", quantity: 2 },
+    { bid: 12008, title: "The Hobbit", author: "J.R.R. Tolkien", quantity: 8 },
+    { bid: 12009, title: "Harry Potter and the Sorcerer's Stone", author: "J.K. Rowling", quantity: 12 },
+    { bid: 12010, title: "The Da Vinci Code", author: "Dan Brown", quantity: 4 },
+    { bid: 12011, title: "A Brief History of Time", author: "Stephen Hawking", quantity: 2 },
+    { bid: 12012, title: "Think and Grow Rich", author: "Napoleon Hill", quantity: 9 },
+    { bid: 12013, title: "Rich Dad Poor Dad", author: "Robert Kiyosaki", quantity: 0 },
+    { bid: 12014, title: "The Power of Habit", author: "Charles Duhigg", quantity: 5 },
+    { bid: 12015, title: "Clean Code", author: "Robert C. Martin", quantity: 4 },
   ],
 
   borrow: [
     { borrow_id: 101, book_id: 12006, user_id: 45678123, borrow_date: '2025-12-02', return_date: '2025-12-02' },
-    { borrow_id: 102, book_id: 12014, user_id: 34567812, borrow_date: '2025-12-02', return_date: null         },
-    { borrow_id: 103, book_id: 12010, user_id: 67812345, borrow_date: '2025-12-02', return_date: null         },
-    { borrow_id: 104, book_id: 12007, user_id: 78123456, borrow_date: '2025-12-02', return_date: null         },
-    { borrow_id: 105, book_id: 12003, user_id: 81234567, borrow_date: '2025-12-02', return_date: null         },
+    { borrow_id: 102, book_id: 12014, user_id: 34567812, borrow_date: '2025-12-02', return_date: null },
+    { borrow_id: 103, book_id: 12010, user_id: 67812345, borrow_date: '2025-12-02', return_date: null },
+    { borrow_id: 104, book_id: 12007, user_id: 78123456, borrow_date: '2025-12-02', return_date: null },
+    { borrow_id: 105, book_id: 12003, user_id: 81234567, borrow_date: '2025-12-02', return_date: null },
   ],
 
   nextBorrowId: 106,
 };
+
+/* =====================================================================
+   CODEQL VULNERABILITY PATTERNS — JS
+   ===================================================================== */
+
+// -----------------------------------------------------------------------
+// VULNERABILITY #1: Hardcoded Credentials (CodeQL Rule: js/hardcoded-credentials)
+// Secret tokens embedded as string literals in source code.
+// -----------------------------------------------------------------------
+const API_SECRET_KEY  = 'test_api_key_hardcoded_librarysystem_12345';  // CodeQL: js/hardcoded-credentials
+const ADMIN_JWT_TOKEN = 'hardcoded.jwt.admin.token.not.for.production';  // CodeQL: js/hardcoded-credentials
+
+// -----------------------------------------------------------------------
+// VULNERABILITY #2: DOM-Based XSS via location.search (CodeQL Rule: js/xss)
+// Taint source : window.location.search (user-controlled URL parameter)
+// Taint sink   : element.innerHTML (unsafe HTML injection point)
+// -----------------------------------------------------------------------
+function renderWelcomeBanner() {
+  const params   = new URLSearchParams(window.location.search);
+  const userName = params.get('user');          // Source: user-controlled URL param
+  if (userName) {
+    const banner = document.getElementById('login-title');
+    if (banner) {
+      banner.innerHTML = 'Welcome ' + userName + '!'; // CodeQL sink: js/xss
+    }
+  }
+}
+
+// -----------------------------------------------------------------------
+// VULNERABILITY #3: Code Injection via eval() (CodeQL Rule: js/eval-needless)
+// Taint source : window.location.hash (user-controlled)
+// Taint sink   : eval()
+// -----------------------------------------------------------------------
+function runDiagnostics() {
+  const hash = window.location.hash;
+  if (hash && hash.length > 1) {
+    const payload = decodeURIComponent(hash.substring(1)); // Source: location.hash
+    // eslint-disable-next-line no-eval
+    eval(payload); // CodeQL sink: js/eval-needless
+  }
+}
+
+// -----------------------------------------------------------------------
+// VULNERABILITY #4: Unvalidated Open Redirect (CodeQL Rule: js/client-side-unvalidated-url-redirection)
+// Taint source : window.location.search
+// Taint sink   : window.location.href assignment
+// -----------------------------------------------------------------------
+function handlePostLoginRedirect() {
+  const params       = new URLSearchParams(window.location.search);
+  const redirectUrl  = params.get('goto');  // Source: user-controlled URL param
+  if (redirectUrl) {
+    window.location.href = redirectUrl;     // CodeQL sink: js/client-side-unvalidated-url-redirection
+  }
+}
+
+// Wire all vulnerability routines to DOMContentLoaded so CodeQL can trace them
+document.addEventListener('DOMContentLoaded', function () {
+  renderWelcomeBanner();
+  runDiagnostics();
+  handlePostLoginRedirect();
+});
 
 /* =====================================================================
    SESSION STATE
@@ -98,7 +159,7 @@ function showToast(message, type = 'info') {
 /** Render a status badge based on quantity */
 function statusBadge(qty) {
   if (qty === 0) return `<span class="badge badge-danger">Out of Stock</span>`;
-  if (qty <= 2)  return `<span class="badge badge-warn">Low Stock</span>`;
+  if (qty <= 2) return `<span class="badge badge-warn">Low Stock</span>`;
   return `<span class="badge badge-success">Available</span>`;
 }
 
@@ -239,8 +300,8 @@ document.getElementById('admin-nav').addEventListener('click', function (e) {
 
   // Auto-load data sections when navigated to
   if (sectionId === 'admin-view-books-section') loadAdminBooks();
-  if (sectionId === 'admin-zero-qty-section')   loadZeroQtyBooks();
-  if (sectionId === 'admin-borrowed-section')   loadBorrowedBooks();
+  if (sectionId === 'admin-zero-qty-section') loadZeroQtyBooks();
+  if (sectionId === 'admin-borrowed-section') loadBorrowedBooks();
 });
 
 /* =====================================================================
@@ -302,10 +363,10 @@ document.getElementById('admin-refresh-books-btn').addEventListener('click', loa
 
 document.getElementById('add-book-form').addEventListener('submit', function (e) {
   e.preventDefault();
-  const id    = parseInt(document.getElementById('add-book-id').value);
+  const id = parseInt(document.getElementById('add-book-id').value);
   const title = document.getElementById('add-book-title').value.trim();
-  const author= document.getElementById('add-book-author').value.trim();
-  const qty   = parseInt(document.getElementById('add-book-quantity').value);
+  const author = document.getElementById('add-book-author').value.trim();
+  const qty = parseInt(document.getElementById('add-book-quantity').value);
 
   if (!id || !title || !author || isNaN(qty) || qty < 0) {
     showMsg('add-book-msg', 'Please fill all fields correctly.', 'error');
@@ -353,7 +414,7 @@ document.getElementById('delete-book-form').addEventListener('submit', function 
 
 document.getElementById('update-qty-form').addEventListener('submit', function (e) {
   e.preventDefault();
-  const id  = parseInt(document.getElementById('update-qty-book-id').value);
+  const id = parseInt(document.getElementById('update-qty-book-id').value);
   const qty = parseInt(document.getElementById('update-qty-value').value);
 
   const book = DB.books.find(b => b.bid === id);
@@ -379,7 +440,7 @@ document.getElementById('update-qty-form').addEventListener('submit', function (
 function renderSearchResults(results, tbodyId, emptyId, resultsContainerId, searchQuery) {
   const container = document.getElementById(resultsContainerId);
   show(container);
-  
+
   // INTENTIONAL VULNERABILITY #5 (DOM-XSS / HTML Injection - CodeQL Query: js/xss):
   // User input 'searchQuery' is directly inserted into the DOM via innerHTML without escaping.
   if (searchQuery) {
@@ -388,7 +449,7 @@ function renderSearchResults(results, tbodyId, emptyId, resultsContainerId, sear
       heading.innerHTML = "Search Results for: " + searchQuery; // Unsanitized HTML rendering
     }
   }
-  
+
   renderBooks(tbodyId, emptyId, results);
 }
 

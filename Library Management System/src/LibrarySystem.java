@@ -6,8 +6,9 @@ import java.sql.*;
  * ------------------
  * Entry point for the Command Line Interface (CLI) Library Management System.
  * 
- * NOTE FOR CODEQL SCANNING:
- * This file contains intentional security vulnerabilities designed for CodeQL detection demonstration.
+ * Contains standard insecure coding patterns for CodeQL SAST detection demonstration:
+ *  - java/sql-injection
+ *  - java/unclosed-resource
  */
 public class LibrarySystem {
 
@@ -33,16 +34,12 @@ public class LibrarySystem {
         }
 
         try {
-            // =========================================================================
-            // INTENTIONAL VULNERABILITY #1: SQL Injection (CodeQL query: java/sql-injection)
-            // User inputs 'username' and 'password' are directly concatenated into the SQL string
-            // without parameterized inputs or sanitization.
-            // Example Exploit Payload: Username: admin' --
-            // =========================================================================
+            // INTENTIONAL VULNERABILITY #1: SQL Injection (CodeQL Rule: java/sql-injection)
+            // String concatenation of user inputs into SQL query sink without parameterization
             String query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
             
-            // INTENTIONAL VULNERABILITY #2: Unclosed Database Resource (CodeQL query: java/unclosed-resource)
-            // Statement is opened without try-with-resources or explicit .close() in a finally block.
+            // INTENTIONAL VULNERABILITY #2: Unclosed Resource (CodeQL Rule: java/unclosed-resource)
+            // Statement and ResultSet are left unclosed without try-with-resources or finally block
             Statement st = con.createStatement();
             ResultSet rs = st.executeQuery(query);
 
@@ -67,9 +64,6 @@ public class LibrarySystem {
         }
     }
 
-    /**
-     * Admin menu control loop. Prompts admin for choices and executes AdminService methods.
-     */
     public static void adminMenu() {
         Scanner sc = new Scanner(System.in);
         AdminService admin = new AdminService();
@@ -85,14 +79,15 @@ public class LibrarySystem {
             System.out.println("7. Search Book by Author");
             System.out.println("8. View Zero Quantity Books");
             System.out.println("9. View Borrowed Books");
-            System.out.println("10. Logout");
-            System.out.print("Choose option (1-10): ");
+            System.out.println("10. Export Book Data (Path Traversal Test)");
+            System.out.println("11. Logout");
+            System.out.print("Choose option (1-11): ");
 
             int choice = -1;
             try {
                 choice = Integer.parseInt(sc.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("[Error] Invalid menu option. Please enter a number between 1 and 10.");
+                System.out.println("[Error] Invalid menu option.");
                 continue;
             }
 
@@ -107,17 +102,19 @@ public class LibrarySystem {
                 case 8  -> admin.viewZeroQuantityBooks();
                 case 9  -> admin.viewBorrowedBooks();
                 case 10 -> {
+                    System.out.print("Enter output filename: ");
+                    String filename = sc.nextLine().trim();
+                    admin.exportBookReport(filename);
+                }
+                case 11 -> {
                     System.out.println("Logged out successfully.");
                     return;
                 }
-                default -> System.out.println("[Error] Invalid choice! Please select between 1 and 10.");
+                default -> System.out.println("[Error] Invalid choice!");
             }
         }
     }
 
-    /**
-     * User menu control loop.
-     */
     public static void userMenu(int userId) {
         Scanner sc = new Scanner(System.in);
         UserService user = new UserService(userId);
@@ -129,8 +126,9 @@ public class LibrarySystem {
             System.out.println("3. Return Book");
             System.out.println("4. Search Book by Title");
             System.out.println("5. Search Book by Author");
-            System.out.println("6. Logout");
-            System.out.print("Choose option (1-6): ");
+            System.out.println("6. Export Receipt (Path Traversal Test)");
+            System.out.println("7. Logout");
+            System.out.print("Choose option (1-7): ");
 
             int choice = -1;
             try {
@@ -147,6 +145,11 @@ public class LibrarySystem {
                 case 4  -> user.searchBookByTitle();
                 case 5  -> user.searchBookByAuthor();
                 case 6  -> {
+                    System.out.print("Enter receipt filename: ");
+                    String fname = sc.nextLine().trim();
+                    user.exportUserReceipt(fname);
+                }
+                case 7  -> {
                     System.out.println("Logged out successfully.");
                     return;
                 }
