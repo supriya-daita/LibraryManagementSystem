@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Library Management System - Manage books, users, borrow and return records with an easy-to-use web interface." />
+  <title>Library Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ==================== LOGIN PAGE ==================== -->
+  <div id="login-page" class="page active">
+    <div class="login-bg">
+      <div class="login-card">
+        <div class="login-logo">
+          <span class="logo-icon">📚</span>
+          <h1 id="login-title">Library Management System</h1>
+          <p class="login-subtitle">Sign in to continue</p>
+        </div>
+
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input
+              type="text"
+              id="login-username"
+              name="username"
+              placeholder="Enter your username"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+              <button type="button" id="toggle-password" class="toggle-btn" title="Show/Hide password">&#128065;</button>
+            </div>
+          </div>
+
+          <div id="login-error" class="alert alert-error hidden">Invalid username or password.</div>
+
+          <button type="submit" id="login-btn" class="btn btn-primary btn-full">
+            <span>Login</span>
+          </button>
+        </form>
+
+        <div class="login-hint">
+          <p><strong>Admin demo:</strong> Rohit Sharma / rohit@123</p>
+          <p><strong>User demo:</strong> Karthik Reddy / karthik#12</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN DASHBOARD ==================== -->
+  <div id="admin-page" class="page hidden">
+    <aside class="sidebar" id="admin-sidebar">
+      <div class="sidebar-brand">
+        <span class="logo-icon-sm">&#128218;</span>
+        <span class="brand-text">LibraryMS</span>
+      </div>
+      <nav class="sidebar-nav" id="admin-nav">
+        <a href="#" class="nav-item active" id="admin-nav-dashboard" data-section="admin-dashboard-section">
+          <span class="nav-icon">&#127968;</span> Dashboard
+        </a>
+        <a href="#" class="nav-item" id="admin-nav-add-book" data-section="admin-add-book-section">
+          <span class="nav-icon">&#10133;</span> Add Book
+        </a>
+        <a href="#" class="nav-item" id="admin-nav-delete-book" data-section="admin-delete-book-section">
+          <span class="nav-icon">&#128465;</span> Delete Book
+        </a>
+        <a href="#" class="nav-item" id="admin-nav-view-books" data-section="admin-view-books-section">
+          <span class="nav-icon">&#128214;</span> View All Books
+        </a>
+        <a href="#" class="nav-item" id="admin-nav-update-qty" data-section="admin-update-qty-section">
+          <span class="nav-icon">&#9998;</span> Update Quantity
+        </a>
+        <a href="#" class="nav-item" id="admin-nav-search" data-section="admin-search-section">
+          <span class="nav-icon">&#128269;</span> Search Books
+        </a>
+        <a href="#" class="nav-item" id="admin-nav-zero-qty" data-section="admin-zero-qty-section">
+          <span class="nav-icon">&#128202;</span> Out of Stock
+        </a>
+        <a href="#" class="nav-item" id="admin-nav-borrowed" data-section="admin-borrowed-section">
+          <span class="nav-icon">&#128203;</span> Borrowed Books
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="admin-logout-btn" class="btn btn-logout">&#128682; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content" id="admin-main">
+      <header class="topbar">
+        <h2 id="admin-page-title">Dashboard</h2>
+        <div class="topbar-right">
+          <span id="admin-welcome-msg" class="welcome-msg">Admin</span>
+        </div>
+      </header>
+
+      <!-- Dashboard Section -->
+      <section id="admin-dashboard-section" class="content-section active">
+        <div class="stats-grid">
+          <div class="stat-card" id="stat-total-books">
+            <div class="stat-icon">&#128218;</div>
+            <div class="stat-info">
+              <p class="stat-label">Total Books</p>
+              <h3 class="stat-value" id="stat-total-books-value">15</h3>
+            </div>
+          </div>
+          <div class="stat-card" id="stat-borrowed">
+            <div class="stat-icon">&#128228;</div>
+            <div class="stat-info">
+              <p class="stat-label">Borrowed</p>
+              <h3 class="stat-value" id="stat-borrowed-value">5</h3>
+            </div>
+          </div>
+          <div class="stat-card" id="stat-out-of-stock">
+            <div class="stat-icon">&#9888;</div>
+            <div class="stat-info">
+              <p class="stat-label">Out of Stock</p>
+              <h3 class="stat-value" id="stat-out-of-stock-value">1</h3>
+            </div>
+          </div>
+          <div class="stat-card" id="stat-total-users">
+            <div class="stat-icon">&#128101;</div>
+            <div class="stat-info">
+              <p class="stat-label">Registered Users</p>
+              <h3 class="stat-value" id="stat-total-users-value">10</h3>
+            </div>
+          </div>
+        </div>
+        <div class="welcome-banner">
+          <h2>Welcome to the Admin Panel</h2>
+          <p>Use the sidebar to manage books, view borrow records, and monitor stock levels.</p>
+        </div>
+      </section>
+
+      <!-- Add Book Section -->
+      <section id="admin-add-book-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Add New Book</h3>
+          <p>Fill in the details to add a new book to the library.</p>
+        </div>
+        <div class="card form-card">
+          <form id="add-book-form" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="add-book-id">Book ID</label>
+                <input type="number" id="add-book-id" name="bookId" placeholder="e.g. 12016" required />
+              </div>
+              <div class="form-group">
+                <label for="add-book-quantity">Quantity</label>
+                <input type="number" id="add-book-quantity" name="quantity" placeholder="e.g. 5" min="0" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="add-book-title">Book Title</label>
+              <input type="text" id="add-book-title" name="title" placeholder="Enter book title" required />
+            </div>
+            <div class="form-group">
+              <label for="add-book-author">Author Name</label>
+              <input type="text" id="add-book-author" name="author" placeholder="Enter author name" required />
+            </div>
+            <div id="add-book-msg" class="alert hidden"></div>
+            <div class="form-actions">
+              <button type="submit" id="add-book-btn" class="btn btn-primary">Add Book</button>
+              <button type="reset" id="add-book-reset-btn" class="btn btn-secondary">Reset</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Delete Book Section -->
+      <section id="admin-delete-book-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Delete Book</h3>
+          <p>Enter the Book ID to permanently remove it from the library.</p>
+        </div>
+        <div class="card form-card">
+          <form id="delete-book-form" novalidate>
+            <div class="form-group">
+              <label for="delete-book-id">Book ID</label>
+              <input type="number" id="delete-book-id" name="bookId" placeholder="Enter Book ID to delete" required />
+            </div>
+            <div id="delete-book-msg" class="alert hidden"></div>
+            <div class="form-actions">
+              <button type="submit" id="delete-book-btn" class="btn btn-danger">Delete Book</button>
+              <button type="reset" id="delete-book-reset-btn" class="btn btn-secondary">Reset</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- View All Books Section -->
+      <section id="admin-view-books-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>All Books</h3>
+          <p>Complete catalogue of books in the library.</p>
+        </div>
+        <div class="card">
+          <div class="table-toolbar">
+            <button id="admin-refresh-books-btn" class="btn btn-secondary">Refresh</button>
+          </div>
+          <div class="table-wrapper">
+            <table id="admin-books-table" class="data-table">
+              <thead>
+                <tr>
+                  <th>Book ID</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="admin-books-tbody"></tbody>
+            </table>
+          </div>
+          <div id="admin-books-empty" class="empty-state hidden">No books found.</div>
+        </div>
+      </section>
+
+      <!-- Update Quantity Section -->
+      <section id="admin-update-qty-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Update Book Quantity</h3>
+          <p>Modify the stock quantity for a specific book.</p>
+        </div>
+        <div class="card form-card">
+          <form id="update-qty-form" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="update-qty-book-id">Book ID</label>
+                <input type="number" id="update-qty-book-id" name="bookId" placeholder="Enter Book ID" required />
+              </div>
+              <div class="form-group">
+                <label for="update-qty-value">New Quantity</label>
+                <input type="number" id="update-qty-value" name="quantity" placeholder="Enter new quantity" min="0" required />
+              </div>
+            </div>
+            <div id="update-qty-msg" class="alert hidden"></div>
+            <div class="form-actions">
+              <button type="submit" id="update-qty-btn" class="btn btn-primary">Update Quantity</button>
+              <button type="reset" id="update-qty-reset-btn" class="btn btn-secondary">Reset</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- Search Books Section -->
+      <section id="admin-search-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Search Books</h3>
+          <p>Search by Book ID, Title, or Author Name.</p>
+        </div>
+        <div class="card form-card">
+          <div class="search-tabs" id="admin-search-tabs">
+            <button class="tab-btn active" id="admin-search-tab-id" data-tab="search-by-id-panel">By ID</button>
+            <button class="tab-btn" id="admin-search-tab-title" data-tab="search-by-title-panel">By Title</button>
+            <button class="tab-btn" id="admin-search-tab-author" data-tab="search-by-author-panel">By Author</button>
+          </div>
+
+          <div id="search-by-id-panel" class="tab-panel active">
+            <form id="admin-search-id-form" novalidate>
+              <div class="form-group">
+                <label for="admin-search-book-id">Book ID</label>
+                <input type="number" id="admin-search-book-id" name="bookId" placeholder="Enter Book ID" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" id="admin-search-id-btn" class="btn btn-primary">Search</button>
+                <button type="reset" id="admin-search-id-reset-btn" class="btn btn-secondary">Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="search-by-title-panel" class="tab-panel hidden">
+            <form id="admin-search-title-form" novalidate>
+              <div class="form-group">
+                <label for="admin-search-book-title">Book Title</label>
+                <input type="text" id="admin-search-book-title" name="title" placeholder="Enter book title" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" id="admin-search-title-btn" class="btn btn-primary">Search</button>
+                <button type="reset" id="admin-search-title-reset-btn" class="btn btn-secondary">Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="search-by-author-panel" class="tab-panel hidden">
+            <form id="admin-search-author-form" novalidate>
+              <div class="form-group">
+                <label for="admin-search-book-author">Author Name</label>
+                <input type="text" id="admin-search-book-author" name="author" placeholder="Enter author name" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" id="admin-search-author-btn" class="btn btn-primary">Search</button>
+                <button type="reset" id="admin-search-author-reset-btn" class="btn btn-secondary">Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="admin-search-results" class="search-results hidden">
+            <h4>Search Results</h4>
+            <div class="table-wrapper">
+              <table id="admin-search-table" class="data-table">
+                <thead>
+                  <tr>
+                    <th>Book ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-search-tbody"></tbody>
+              </table>
+            </div>
+            <div id="admin-search-empty" class="empty-state hidden">No books found matching your search.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Out of Stock Section -->
+      <section id="admin-zero-qty-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Out of Stock Books</h3>
+          <p>Books with zero quantity currently unavailable for borrowing.</p>
+        </div>
+        <div class="card">
+          <div class="table-toolbar">
+            <button id="admin-refresh-zero-btn" class="btn btn-secondary">Refresh</button>
+          </div>
+          <div class="table-wrapper">
+            <table id="admin-zero-table" class="data-table">
+              <thead>
+                <tr>
+                  <th>Book ID</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+              <tbody id="admin-zero-tbody"></tbody>
+            </table>
+          </div>
+          <div id="admin-zero-empty" class="empty-state hidden">All books are currently in stock!</div>
+        </div>
+      </section>
+
+      <!-- Borrowed Books Section -->
+      <section id="admin-borrowed-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Borrowed Books</h3>
+          <p>List of all currently borrowed books and their return status.</p>
+        </div>
+        <div class="card">
+          <div class="table-toolbar">
+            <button id="admin-refresh-borrowed-btn" class="btn btn-secondary">Refresh</button>
+          </div>
+          <div class="table-wrapper">
+            <table id="admin-borrowed-table" class="data-table">
+              <thead>
+                <tr>
+                  <th>Borrow ID</th>
+                  <th>Username</th>
+                  <th>Book Title</th>
+                  <th>Author</th>
+                  <th>Borrow Date</th>
+                  <th>Return Date</th>
+                </tr>
+              </thead>
+              <tbody id="admin-borrowed-tbody"></tbody>
+            </table>
+          </div>
+          <div id="admin-borrowed-empty" class="empty-state hidden">No active borrow records found.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== USER DASHBOARD ==================== -->
+  <div id="user-page" class="page hidden">
+    <aside class="sidebar" id="user-sidebar">
+      <div class="sidebar-brand">
+        <span class="logo-icon-sm">&#128218;</span>
+        <span class="brand-text">LibraryMS</span>
+      </div>
+      <nav class="sidebar-nav" id="user-nav">
+        <a href="#" class="nav-item active" id="user-nav-dashboard" data-section="user-dashboard-section">
+          <span class="nav-icon">&#127968;</span> Dashboard
+        </a>
+        <a href="#" class="nav-item" id="user-nav-view-books" data-section="user-view-books-section">
+          <span class="nav-icon">&#128214;</span> Available Books
+        </a>
+        <a href="#" class="nav-item" id="user-nav-borrow" data-section="user-borrow-section">
+          <span class="nav-icon">&#128228;</span> Borrow Book
+        </a>
+        <a href="#" class="nav-item" id="user-nav-return" data-section="user-return-section">
+          <span class="nav-icon">&#128229;</span> Return Book
+        </a>
+        <a href="#" class="nav-item" id="user-nav-search" data-section="user-search-section">
+          <span class="nav-icon">&#128269;</span> Search Books
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="user-logout-btn" class="btn btn-logout">&#128682; Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content" id="user-main">
+      <header class="topbar">
+        <h2 id="user-page-title">Dashboard</h2>
+        <div class="topbar-right">
+          <span id="user-welcome-msg" class="welcome-msg">User</span>
+        </div>
+      </header>
+
+      <section id="user-dashboard-section" class="content-section active">
+        <div class="welcome-banner">
+          <h2>Welcome to the Library</h2>
+          <p>Browse available books, borrow and return them using the sidebar menu.</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card" id="user-stat-available">
+            <div class="stat-icon">&#128218;</div>
+            <div class="stat-info">
+              <p class="stat-label">Available Books</p>
+              <h3 class="stat-value" id="user-stat-available-value">15</h3>
+            </div>
+          </div>
+          <div class="stat-card" id="user-stat-borrowed">
+            <div class="stat-icon">&#128228;</div>
+            <div class="stat-info">
+              <p class="stat-label">My Borrowed Books</p>
+              <h3 class="stat-value" id="user-stat-borrowed-value">0</h3>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="user-view-books-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Available Books</h3>
+          <p>Browse all books in the library.</p>
+        </div>
+        <div class="card">
+          <div class="table-toolbar">
+            <button id="user-refresh-books-btn" class="btn btn-secondary">Refresh</button>
+          </div>
+          <div class="table-wrapper">
+            <table id="user-books-table" class="data-table">
+              <thead>
+                <tr>
+                  <th>Book ID</th>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="user-books-tbody"></tbody>
+            </table>
+          </div>
+          <div id="user-books-empty" class="empty-state hidden">No books found.</div>
+        </div>
+      </section>
+
+      <section id="user-borrow-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Borrow a Book</h3>
+          <p>Enter the Book ID to borrow it.</p>
+        </div>
+        <div class="card form-card">
+          <form id="borrow-book-form" novalidate>
+            <div class="form-group">
+              <label for="borrow-book-id">Book ID</label>
+              <input type="number" id="borrow-book-id" name="bookId" placeholder="Enter Book ID to borrow" required />
+            </div>
+            <div id="borrow-book-msg" class="alert hidden"></div>
+            <div class="form-actions">
+              <button type="submit" id="borrow-book-btn" class="btn btn-primary">Borrow Book</button>
+              <button type="reset" id="borrow-book-reset-btn" class="btn btn-secondary">Reset</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="user-return-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Return a Book</h3>
+          <p>Enter the Book ID to return it to the library.</p>
+        </div>
+        <div class="card form-card">
+          <form id="return-book-form" novalidate>
+            <div class="form-group">
+              <label for="return-book-id">Book ID</label>
+              <input type="number" id="return-book-id" name="bookId" placeholder="Enter Book ID to return" required />
+            </div>
+            <div id="return-book-msg" class="alert hidden"></div>
+            <div class="form-actions">
+              <button type="submit" id="return-book-btn" class="btn btn-primary">Return Book</button>
+              <button type="reset" id="return-book-reset-btn" class="btn btn-secondary">Reset</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="user-search-section" class="content-section hidden">
+        <div class="section-header">
+          <h3>Search Books</h3>
+          <p>Search by Title or Author Name.</p>
+        </div>
+        <div class="card form-card">
+          <div class="search-tabs" id="user-search-tabs">
+            <button class="tab-btn active" id="user-search-tab-title" data-tab="user-search-title-panel">By Title</button>
+            <button class="tab-btn" id="user-search-tab-author" data-tab="user-search-author-panel">By Author</button>
+          </div>
+
+          <div id="user-search-title-panel" class="tab-panel active">
+            <form id="user-search-title-form" novalidate>
+              <div class="form-group">
+                <label for="user-search-book-title">Book Title</label>
+                <input type="text" id="user-search-book-title" name="title" placeholder="Enter book title" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" id="user-search-title-btn" class="btn btn-primary">Search</button>
+                <button type="reset" id="user-search-title-reset-btn" class="btn btn-secondary">Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="user-search-author-panel" class="tab-panel hidden">
+            <form id="user-search-author-form" novalidate>
+              <div class="form-group">
+                <label for="user-search-book-author">Author Name</label>
+                <input type="text" id="user-search-book-author" name="author" placeholder="Enter author name" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" id="user-search-author-btn" class="btn btn-primary">Search</button>
+                <button type="reset" id="user-search-author-reset-btn" class="btn btn-secondary">Clear</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="user-search-results" class="search-results hidden">
+            <h4>Search Results</h4>
+            <div class="table-wrapper">
+              <table id="user-search-table" class="data-table">
+                <thead>
+                  <tr>
+                    <th>Book ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="user-search-tbody"></tbody>
+              </table>
+            </div>
+            <div id="user-search-empty" class="empty-state hidden">No books found matching your search.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
