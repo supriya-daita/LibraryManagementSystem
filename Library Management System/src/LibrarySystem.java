@@ -6,10 +6,8 @@ import java.sql.*;
  * ------------------
  * Entry point for the Command Line Interface (CLI) Library Management System.
  * 
- * Features:
- *  - User Authentication (Admin / User roles)
- *  - Dynamic menu navigation based on authenticated role
- *  - Exception handling for invalid inputs and database execution errors
+ * NOTE FOR CODEQL SCANNING:
+ * This file contains intentional security vulnerabilities designed for CodeQL detection demonstration.
  */
 public class LibrarySystem {
 
@@ -28,43 +26,44 @@ public class LibrarySystem {
             return;
         }
 
-        // Establish connection to database for authentication
         Connection con = DBConnection.getConnection();
         if (con == null) {
-            System.out.println("[Error] Could not connect to the database. Exiting application.");
+            System.out.println("[Error] Could not connect to database.");
             return;
         }
 
-        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username=? AND password=?")) {
-            ps.setString(1, username);
-            ps.setString(2, password);
+        try {
+            // =========================================================================
+            // INTENTIONAL VULNERABILITY #1: SQL Injection (CodeQL query: java/sql-injection)
+            // User inputs 'username' and 'password' are directly concatenated into the SQL string
+            // without parameterized inputs or sanitization.
+            // Example Exploit Payload: Username: admin' --
+            // =========================================================================
+            String query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
+            
+            // INTENTIONAL VULNERABILITY #2: Unclosed Database Resource (CodeQL query: java/unclosed-resource)
+            // Statement is opened without try-with-resources or explicit .close() in a finally block.
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(query);
 
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String role = rs.getString("role");
-                    int userId = rs.getInt("user_id");
+            if (rs.next()) {
+                String role = rs.getString("role");
+                int userId = rs.getInt("user_id");
 
-                    System.out.println("\n[Success] Logged in as " + username + " (" + role.toUpperCase() + ")");
+                System.out.println("\n[Success] Logged in as " + username + " (" + role.toUpperCase() + ")");
 
-                    // Delegate execution to menu handlers based on user role
-                    if ("admin".equalsIgnoreCase(role)) {
-                        adminMenu();
-                    } else {
-                        userMenu(userId);
-                    }
+                if ("admin".equalsIgnoreCase(role)) {
+                    adminMenu();
                 } else {
-                    System.out.println("[Error] Invalid Login Credentials!");
+                    userMenu(userId);
                 }
+            } else {
+                System.out.println("[Error] Invalid Login Credentials!");
             }
+
         } catch (SQLException e) {
             System.out.println("[Error] Database query failure during authentication.");
             System.out.println("  SQL State: " + e.getSQLState() + " | " + e.getMessage());
-        } finally {
-            try {
-                if (con != null) con.close();
-            } catch (SQLException e) {
-                System.err.println("[Warning] Failed to close DB connection: " + e.getMessage());
-            }
         }
     }
 
@@ -117,9 +116,7 @@ public class LibrarySystem {
     }
 
     /**
-     * User menu control loop. Prompts user for choices and executes UserService methods.
-     * 
-     * @param userId The ID of the authenticated user.
+     * User menu control loop.
      */
     public static void userMenu(int userId) {
         Scanner sc = new Scanner(System.in);
@@ -139,7 +136,7 @@ public class LibrarySystem {
             try {
                 choice = Integer.parseInt(sc.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println("[Error] Invalid menu option. Please enter a number between 1 and 6.");
+                System.out.println("[Error] Invalid menu option.");
                 continue;
             }
 
@@ -153,7 +150,7 @@ public class LibrarySystem {
                     System.out.println("Logged out successfully.");
                     return;
                 }
-                default -> System.out.println("[Error] Invalid choice! Please select between 1 and 6.");
+                default -> System.out.println("[Error] Invalid choice!");
             }
         }
     }

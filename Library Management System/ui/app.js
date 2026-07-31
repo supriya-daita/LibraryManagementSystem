@@ -376,9 +376,19 @@ document.getElementById('update-qty-form').addEventListener('submit', function (
    ADMIN: SEARCH BOOKS
    ===================================================================== */
 
-function renderSearchResults(results, tbodyId, emptyId, resultsContainerId) {
+function renderSearchResults(results, tbodyId, emptyId, resultsContainerId, searchQuery) {
   const container = document.getElementById(resultsContainerId);
   show(container);
+  
+  // INTENTIONAL VULNERABILITY #5 (DOM-XSS / HTML Injection - CodeQL Query: js/xss):
+  // User input 'searchQuery' is directly inserted into the DOM via innerHTML without escaping.
+  if (searchQuery) {
+    const heading = container.querySelector('h4');
+    if (heading) {
+      heading.innerHTML = "Search Results for: " + searchQuery; // Unsanitized HTML rendering
+    }
+  }
+  
   renderBooks(tbodyId, emptyId, results);
 }
 
@@ -393,17 +403,17 @@ document.getElementById('admin-search-id-form').addEventListener('submit', funct
 // Search by Title
 document.getElementById('admin-search-title-form').addEventListener('submit', function (e) {
   e.preventDefault();
-  const title = document.getElementById('admin-search-book-title').value.trim().toLowerCase();
-  const results = DB.books.filter(b => b.title.toLowerCase().includes(title));
-  renderSearchResults(results, 'admin-search-tbody', 'admin-search-empty', 'admin-search-results');
+  const title = document.getElementById('admin-search-book-title').value.trim();
+  const results = DB.books.filter(b => b.title.toLowerCase().includes(title.toLowerCase()));
+  renderSearchResults(results, 'admin-search-tbody', 'admin-search-empty', 'admin-search-results', title);
 });
 
 // Search by Author
 document.getElementById('admin-search-author-form').addEventListener('submit', function (e) {
   e.preventDefault();
-  const author = document.getElementById('admin-search-book-author').value.trim().toLowerCase();
-  const results = DB.books.filter(b => b.author.toLowerCase().includes(author));
-  renderSearchResults(results, 'admin-search-tbody', 'admin-search-empty', 'admin-search-results');
+  const author = document.getElementById('admin-search-book-author').value.trim();
+  const results = DB.books.filter(b => b.author.toLowerCase().includes(author.toLowerCase()));
+  renderSearchResults(results, 'admin-search-tbody', 'admin-search-empty', 'admin-search-results', author);
 });
 
 /* =====================================================================
