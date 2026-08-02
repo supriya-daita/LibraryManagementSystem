@@ -6,27 +6,39 @@ from pathlib import Path
 import tree_sitter
 
 # Tree-sitter setup
+LANG_MAP = {}
+
 try:
     import tree_sitter_python
-    import tree_sitter_javascript
-    import tree_sitter_typescript
-    import tree_sitter_java
-    import tree_sitter_go
-    import tree_sitter_ruby
-except ImportError:
-    print("Warning: Some tree-sitter grammars not installed.")
+    LANG_MAP[".py"] = ("python", tree_sitter_python)
+except ImportError: pass
 
-# Language mapping
-LANG_MAP = {
-    ".py": ("python", tree_sitter_python),
-    ".js": ("javascript", tree_sitter_javascript),
-    ".jsx": ("javascript", tree_sitter_javascript),
-    ".ts": ("typescript", tree_sitter_typescript),
-    ".tsx": ("tsx", tree_sitter_typescript),
-    ".java": ("java", tree_sitter_java),
-    ".go": ("go", tree_sitter_go),
-    ".rb": ("ruby", tree_sitter_ruby)
-}
+try:
+    import tree_sitter_javascript
+    LANG_MAP[".js"] = ("javascript", tree_sitter_javascript)
+    LANG_MAP[".jsx"] = ("javascript", tree_sitter_javascript)
+except ImportError: pass
+
+try:
+    import tree_sitter_typescript
+    LANG_MAP[".ts"] = ("typescript", tree_sitter_typescript)
+    LANG_MAP[".tsx"] = ("tsx", tree_sitter_typescript)
+except ImportError: pass
+
+try:
+    import tree_sitter_java
+    LANG_MAP[".java"] = ("java", tree_sitter_java)
+except ImportError: pass
+
+try:
+    import tree_sitter_go
+    LANG_MAP[".go"] = ("go", tree_sitter_go)
+except ImportError: pass
+
+try:
+    import tree_sitter_ruby
+    LANG_MAP[".rb"] = ("ruby", tree_sitter_ruby)
+except ImportError: pass
 
 def get_parser(ext):
     if ext not in LANG_MAP:
