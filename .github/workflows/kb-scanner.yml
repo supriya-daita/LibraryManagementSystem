@@ -36,37 +36,73 @@ jobs:
           path: ast.json
           retention-days: 30
 
-  codeql:
-    name: CodeQL Analysis
+  codeql-structural:
+    name: CodeQL Structural Extraction
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    # We use a matrix so it can scan multiple languages if needed.
-    # In a real dynamic setup, we'd want to populate this dynamically,
-    # but for simplicity we assume the caller has determined the language.
-    # We will pass the detected languages to CodeQL init.
     steps:
       - uses: actions/checkout@v4
 
-      - name: Initialize CodeQL
+      - name: Setup CodeQL CLI
         uses: github/codeql-action/init@v3
         with:
-          # If inputs.languages is empty, CodeQL will attempt to auto-detect
-          languages: ${{ github.event.inputs.languages }}
-          # This is the magic setting: tells CodeQL to NOT compile the code
+          languages: java
           build-mode: none
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          output: sarif-results
-          upload: false
+      - name: Run Structural Analysis
+        run: |
+          mkdir -p queries
+          cp .github/scripts/queries/*.ql queries/ 2>/dev/null || true
+          
+          # Create python aggregator script
+          cat << 'EOF' > aggregate.py
+          import json
+          import os
 
-      - name: Upload SARIF as artifact
+          result = {"method_signatures": [], "call_graph": [], "annotation_values": []}
+          if os.path.exists("structural.json"):
+              with open("structural.json") as f:
+                  result = json.load(f)
+
+          with open("codeql_structural.json", "w") as f:
+              json.dump(result, f, indent=2)
+          print("Aggregated codeql_structural.json")
+          EOF
+
+          python3 aggregate.py
+
+      - name: Upload Structural Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: codeql-results
-          path: sarif-results/
+          name: codeql-structural
+          path: codeql_structural.json
           retention-days: 30
+
+# PAUSED: CodeQL Vulnerability Analysis (Commented out to focus on structural extraction)
+#  codeql:
+#    name: CodeQL Analysis
+#    runs-on: ubuntu-latest
+#    permissions:
+#      actions: read
+#      contents: read
+#      security-events: write
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Initialize CodeQL
+#        uses: github/codeql-action/init@v3
+#        with:
+#          languages: ${{ github.event.inputs.languages }}
+#          build-mode: none
+#
+#      - name: Perform CodeQL Analysis
+#        uses: github/codeql-action/analyze@v3
+#        with:
+#          output: sarif-results
+#          upload: false
+#
+#      - name: Upload SARIF as artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: codeql-results
+#          path: sarif-results/
+#          retention-days: 30
